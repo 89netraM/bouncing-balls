@@ -101,8 +101,8 @@ export class Ball {
 	 * simulation.
 	 */
 	public step(deltaTime: number): Ball {
-		// Average velocity before and after
-		//
+		// Average velocity before and after because reality is continues but
+		// the simulation is incremental.
 		const temp = this
 			.withVelocity(this.velocity.add(this.acceleration.scale(deltaTime)));
 		return temp
