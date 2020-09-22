@@ -17,6 +17,7 @@ let gravityToggle: HTMLInputElement;
 
 let playButton: HTMLButtonElement;
 
+let playingWhenLeaving: boolean = false;
 let animationHandle: number = null;
 let previousTimestamp: DOMHighResTimeStamp = null;
 
@@ -39,6 +40,8 @@ window.addEventListener(
 		playButton.addEventListener("click", togglePlaying, true);
 
 		document.getElementById("restart").addEventListener("click", start, true);
+
+		document.addEventListener("visibilitychange", onVisibilityChanged, true);
 
 		start();
 	},
@@ -116,4 +119,19 @@ function updateFrame(timestamp: DOMHighResTimeStamp): void {
 	previousTimestamp = timestamp;
 
 	animationHandle = window.requestAnimationFrame(updateFrame);
+}
+
+function onVisibilityChanged(): void {
+	if (document.hidden) {
+		if (isPlaying()) {
+			pause();
+			playingWhenLeaving = true;
+		}
+	}
+	else {
+		if (playingWhenLeaving) {
+			resume();
+			playingWhenLeaving = false;
+		}
+	}
 }
