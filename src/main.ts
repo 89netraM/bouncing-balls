@@ -4,6 +4,11 @@ import { View } from "./View";
 
 const pixelsPerMeter = 200;
 
+const gravity = new Vector(0, -9.8);
+function getAcceleration(): Vector {
+	return gravityToggle.checked ? gravity : Vector.Zero;
+}
+
 let view: View;
 let model: Model;
 
@@ -34,7 +39,7 @@ window.addEventListener(
 		potentialDisplay = document.getElementById("potential") as HTMLSpanElement;
 
 		gravityToggle = document.getElementById("gravity") as HTMLInputElement;
-		gravityToggle.addEventListener("change", () => model = model.withBalls(model.balls.map(b => b.withAcceleration(gravityToggle.checked ? new Vector(0, -9.8) : Vector.Zero))), true);
+		gravityToggle.addEventListener("change", () => model = model.withBalls(model.balls.map(b => b.withAcceleration(getAcceleration()))), true);
 
 		playButton = document.getElementById("play") as HTMLButtonElement;
 		playButton.addEventListener("click", togglePlaying, true);
@@ -62,14 +67,14 @@ function start(): void {
 				1,
 				new Vector(-1, 0),
 				new Vector(1, 1),
-				gravityToggle.checked ? new Vector(0, -9.8) : Vector.Zero
+				getAcceleration()
 			),
 			new Ball(
 				0.3,
 				1,
 				new Vector(1, 0),
 				new Vector(1, 1),
-				gravityToggle.checked ? new Vector(0, -9.8) : Vector.Zero
+				getAcceleration()
 			)
 		)
 	);
@@ -110,9 +115,9 @@ function updateFrame(timestamp: DOMHighResTimeStamp): void {
 	}
 
 	if (debugToggle.checked) {
-		energyDisplay.innerText = model.balls.reduce((e, b) => e + b.mass * Math.pow(b.velocity.length, 2) / 2 + b.mass * (gravityToggle.checked ? 9.8 : 0) * (b.position.y - model.lowerBound.y), 0).toFixed(2)
+		energyDisplay.innerText = model.balls.reduce((e, b) => e + b.mass * Math.pow(b.velocity.length, 2) / 2 + b.mass * Math.abs(getAcceleration().y) * (b.position.y - model.lowerBound.y), 0).toFixed(2)
 		kineticDisplay.innerText = model.balls.reduce((e, b) => e + b.mass * Math.pow(b.velocity.length, 2) / 2, 0).toFixed(2)
-		potentialDisplay.innerText = model.balls.reduce((e, b) => e + b.mass * (gravityToggle.checked ? 9.8 : 0) * (b.position.y - model.lowerBound.y), 0).toFixed(2);
+		potentialDisplay.innerText = model.balls.reduce((e, b) => e + b.mass * Math.abs(getAcceleration().y) * (b.position.y - model.lowerBound.y), 0).toFixed(2);
 	}
 	view.render(model, debugToggle.checked);
 
