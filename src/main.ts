@@ -36,22 +36,7 @@ window.addEventListener(
 		gravityToggle.addEventListener("change", () => model = model.withBalls(model.balls.map(b => b.withAcceleration(gravityToggle.checked ? new Vector(0, -9.8) : Vector.Zero))), true);
 
 		playButton = document.getElementById("play") as HTMLButtonElement;
-		playButton.addEventListener(
-			"click",
-			() => {
-				if (animationHandle == null) {
-					animationHandle = window.requestAnimationFrame(updateFrame);
-					playButton.classList.toggle("primary", false);
-				}
-				else {
-					window.cancelAnimationFrame(animationHandle);
-					animationHandle = null;
-					previousTimestamp = null;
-					playButton.classList.toggle("primary", true);
-				}
-			},
-			true
-		);
+		playButton.addEventListener("click", togglePlaying, true);
 
 		document.getElementById("restart").addEventListener("click", start, true);
 
@@ -91,6 +76,31 @@ function start(): void {
 	playButton.classList.toggle("primary", false);
 }
 
+function isPlaying(): boolean {
+	return animationHandle != null;
+}
+
+function togglePlaying(): void {
+	if (isPlaying()) {
+		pause();
+	}
+	else {
+		resume();
+	}
+}
+
+function pause(): void {
+	window.cancelAnimationFrame(animationHandle);
+	animationHandle = null;
+	previousTimestamp = null;
+	playButton.classList.toggle("primary", true);
+}
+
+function resume(): void {
+	animationHandle = window.requestAnimationFrame(updateFrame);
+	playButton.classList.toggle("primary", false);
+}
+
 function updateFrame(timestamp: DOMHighResTimeStamp): void {
 	if (previousTimestamp != null) {
 		model = model.step((timestamp - previousTimestamp) / 1000);
@@ -107,5 +117,3 @@ function updateFrame(timestamp: DOMHighResTimeStamp): void {
 
 	animationHandle = window.requestAnimationFrame(updateFrame);
 }
-
-window["log"] = new Array<number>();
