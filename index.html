@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+	<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	</head>
+	<body>
+		<canvas id="main-canvas"></canvas>
+		<div id="settings">
+			<p>
+				<label>
+					Debug:
+					<input id="debug" type="checkbox">
+					<span class="toggle"></span>
+				</label>
+			</p>
+			<p id="debug-info">
+				Total energy: <code id="energy">?</code><br/>
+				Total kinetic energy: <code id="kinetic">?</code><br/>
+				Total momentum: <code id="momentum">?</code>
+			</p>
+
+			<hr/>
+
+			<p>
+				<label>
+					Gravity:
+					<input id="gravity" type="checkbox">
+					<span class="toggle"></span>
+				</label>
+			</p>
+
+			<p id="buttons">
+				<button id="play"></button>
+				<button id="restart">Restart</button>
+			</p>
+		</div>
+	</body>
+</html>

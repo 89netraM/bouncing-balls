@@ -1,0 +1,10 @@
+{
+	"compilerOptions": {
+		"alwaysStrict": true,
+		"module": "ES6",
+		"moduleResolution": "node",
+		"outDir": "dist",
+		"target": "ES6"
+	},
+	"include": [ "src/**/*" ]
+}
