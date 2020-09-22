@@ -4,14 +4,22 @@
 	"private": true,
 	"author": "Mårten Åsberg",
 	"license": "Copyright (C) 2020 Mårten Åsberg",
+	"type": "module",
+	"scripts": {
+		"test": "ts-node ./node_modules/jasmine/bin/jasmine --config=\"jasmine.json\""
+	},
 	"devDependencies": {
 		"@89netram/snygg": "github:89netraM/snygg#v1.0.2",
+		"@types/jasmine": "^3.5.14",
 		"css-loader": "^4.3.0",
 		"html-webpack-plugin": "^4.4.1",
+		"jasmine": "^3.6.1",
+		"jasmine-spec-reporter": "^6.0.0",
 		"node-sass": "^4.14.1",
 		"sass-loader": "^10.0.2",
 		"style-loader": "^1.2.1",
 		"ts-loader": "^8.0.4",
+		"ts-node": "^9.0.0",
 		"typescript": "^4.0.3",
 		"webpack": "^4.44.2",
 		"webpack-cli": "^3.3.12",

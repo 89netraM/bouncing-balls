@@ -1,10 +1,11 @@
 {
 	"compilerOptions": {
 		"alwaysStrict": true,
-		"module": "ES6",
+		"module": "CommonJS",
 		"moduleResolution": "node",
 		"outDir": "dist",
 		"target": "ES6"
 	},
-	"include": [ "src/**/*" ]
+	"include": [ "src/**/*" ],
+	"exclude": [ "src/**/*.spec.ts" ]
 }
