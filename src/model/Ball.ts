@@ -129,6 +129,6 @@ export class Ball {
 		const temp = this
 			.withVelocity(this.velocity.add(this.acceleration.scale(deltaTime)));
 		return temp
-			.withPosition(this.position.add(this.velocity.scale(deltaTime).add(temp.velocity.scale(deltaTime).scale(1 / 2))));
+			.withPosition(this.position.add(this.velocity.scale(deltaTime).add(temp.velocity.scale(deltaTime)).scale(1 / 2)));
 	}
 }
