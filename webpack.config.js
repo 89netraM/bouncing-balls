@@ -26,8 +26,8 @@ module.exports = {
 	plugins: [
 		new HtmlPlugin({
 			template: path.resolve(__dirname, "index.html"),
-			title: "One Button Mash",
-			base: "/"
+			title: "Bouncing Balls",
+			base: "./"
 		})
 	],
 	output: {

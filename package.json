@@ -2,8 +2,8 @@
 	"name": "bouncing-balls",
 	"version": "0.0.1",
 	"private": true,
-	"author": "Q",
-	"license": "MIT",
+	"author": "Mårten Åsberg",
+	"license": "Copyright (C) 2020 Mårten Åsberg",
 	"devDependencies": {
 		"@89netram/snygg": "github:89netraM/snygg#v1.0.2",
 		"css-loader": "^4.3.0",
