@@ -12,6 +12,8 @@ function getAcceleration(): Vector {
 let view: View;
 let model: Model;
 
+let canvas: HTMLCanvasElement;
+
 let debugToggle: HTMLInputElement;
 let debugInfo: HTMLParagraphElement;
 let energyDisplay: HTMLSpanElement;
@@ -29,7 +31,10 @@ let previousTimestamp: DOMHighResTimeStamp = null;
 window.addEventListener(
 	"load",
 	() => {
-		view = new View(document.getElementById("main-canvas") as HTMLCanvasElement);
+		canvas = document.getElementById("main-canvas") as HTMLCanvasElement;
+		canvas.addEventListener("click", addBallClick, true);
+
+		view = new View(canvas);
 
 		debugToggle = document.getElementById("debug") as HTMLInputElement;
 		debugToggle.addEventListener("change", () => { debugInfo.classList.toggle("visible", debugToggle.checked); view.render(model, debugToggle.checked); }, true);
@@ -107,6 +112,66 @@ function pause(): void {
 function resume(): void {
 	animationHandle = window.requestAnimationFrame(updateFrame);
 	playButton.classList.toggle("primary", false);
+}
+
+function addBallClick(e: MouseEvent): void {
+	const wasPlaying = isPlaying();
+	if (wasPlaying) {
+		pause();
+	}
+
+	const done = () => {
+		if (wasPlaying) {
+			resume();
+		}
+		else {
+			view.render(model, debugToggle.checked);
+		}
+
+		document.getElementById("add-dialog-add").removeEventListener("click", ok, true);
+		document.getElementById("add-dialog-cancel").removeEventListener("click", done, true);
+		document.getElementById("add-dialog").setAttribute("data-open", `${false}`);
+	};
+
+	const ok = () => {
+		const radius = (document.getElementById("add-dialog-radius") as HTMLInputElement).valueAsNumber;
+		const density = (document.getElementById("add-dialog-density") as HTMLInputElement).valueAsNumber;
+		const position = new Vector(
+			(document.getElementById("add-dialog-position-x") as HTMLInputElement).valueAsNumber,
+			(document.getElementById("add-dialog-position-y") as HTMLInputElement).valueAsNumber
+		);
+		const velocity = new Vector(
+			(document.getElementById("add-dialog-velocity-x") as HTMLInputElement).valueAsNumber,
+			(document.getElementById("add-dialog-velocity-y") as HTMLInputElement).valueAsNumber
+		);
+
+		model = model.withBalls([
+			...model.balls,
+			new Ball(
+				radius,
+				density,
+				position,
+				velocity,
+				getAcceleration()
+			)
+		]);
+
+		done();
+	};
+
+	const selectedPosition = view.transformers(model).screenToPoint(new Vector(e.x, e.y));
+
+	(document.getElementById("add-dialog-radius") as HTMLInputElement).valueAsNumber = 0.3;
+	(document.getElementById("add-dialog-density") as HTMLInputElement).valueAsNumber = 1;
+	(document.getElementById("add-dialog-position-x") as HTMLInputElement).valueAsNumber = selectedPosition.x;
+	(document.getElementById("add-dialog-position-y") as HTMLInputElement).valueAsNumber = selectedPosition.y;
+	(document.getElementById("add-dialog-velocity-x") as HTMLInputElement).valueAsNumber = 0;
+	(document.getElementById("add-dialog-velocity-y") as HTMLInputElement).valueAsNumber = 0;
+
+	document.getElementById("add-dialog-add").addEventListener("click", ok, true);
+	document.getElementById("add-dialog-cancel").addEventListener("click", done, true);
+
+	document.getElementById("add-dialog").setAttribute("data-open", `${true}`);
 }
 
 function updateFrame(timestamp: DOMHighResTimeStamp): void {

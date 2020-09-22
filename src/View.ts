@@ -24,39 +24,62 @@ export class View {
 	}
 
 	/**
+	 * Returns a set of functions and properties that can be used to transform
+	 * Vectors between model and screen.
+	 */
+	public transformers(model: Model) {
+		const height = this.height;
+		const widthRatio = this.width / (model.upperBound.x - model.lowerBound.x);
+		const heightRatio = this.height / (model.upperBound.y - model.lowerBound.y);
+
+		return {
+			widthRatio,
+			heightRatio,
+			/**
+			 * Transforms `point` from a model relative vector to a screen
+			 * relative vector.
+			 */
+			pointToScreen(point: Vector): Vector {
+				return point
+					.subtract(model.lowerBound)
+					.withX(x => x * widthRatio)
+					.withY(y => height - y * heightRatio);
+			},
+			/**
+			 * Transforms `screen` from a screen relative vector to a model
+			 * relative vector.
+			 */
+			screenToPoint(screen: Vector): Vector {
+				return screen
+					.withX(x => x / widthRatio)
+					.withY(y => (height - y) / heightRatio)
+					.add(model.lowerBound);
+			}
+		};
+	}
+
+	/**
 	 * Renders the given model to the render target.
 	 */
 	public render(model: Model, debug: boolean = false): void {
-		const widthRatio = this.width / (model.upperBound.x - model.lowerBound.x);
-		const heightRatio = this.height / (model.upperBound.y - model.lowerBound.y);
+		const transformers = this.transformers(model);
 
 		const ballColor = "#da5555";
 		const color = window.getComputedStyle(document.documentElement).getPropertyValue("--color");
 		const colorInverted = window.getComputedStyle(document.documentElement).getPropertyValue("--color-inverted");
 
-		/**
-		 * Transforms `position` from a model relative vector to a screen
-		 * relative vector.
-		 */
-		const transformPosition = (position: Vector): Vector => {
-			return position
-				.subtract(model.lowerBound)
-				.withX(x => x * widthRatio)
-				.withY(y => this.height - y * heightRatio);
-		};
-
 		this.context.clearRect(0, 0, this.width, this.height);
 
 		for (const ball of model.balls) {
-			const screenPosition = transformPosition(ball.position);
+			const screenPosition = transformers.pointToScreen(ball.position);
 
 			// Draws the ball
 			this.context.beginPath();
 			this.context.ellipse(
 				screenPosition.x,
 				screenPosition.y,
-				ball.radius * widthRatio,
-				ball.radius * heightRatio,
+				ball.radius * transformers.widthRatio,
+				ball.radius * transformers.heightRatio,
 				0, 0, Math.PI * 2
 			);
 			this.context.fillStyle = ballColor;
@@ -67,8 +90,8 @@ export class View {
 				this.context.beginPath();
 				this.context.lineTo(screenPosition.x, screenPosition.y);
 				this.context.lineTo(
-					screenPosition.x + ball.velocity.normalized.x * ball.radius * widthRatio,
-					screenPosition.y - ball.velocity.normalized.y * ball.radius * heightRatio
+					screenPosition.x + ball.velocity.normalized.x * ball.radius * transformers.widthRatio,
+					screenPosition.y - ball.velocity.normalized.y * ball.radius * transformers.heightRatio
 				);
 				this.context.strokeStyle = colorInverted;
 				this.context.stroke();
