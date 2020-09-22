@@ -95,37 +95,14 @@ export class Ball {
 					.withY(this.position.y - this.radius <= lowerBound.y ? Math.abs(this.velocity.y) : upperBound.y <= this.position.y + this.radius ? -Math.abs(this.velocity.y) : this.velocity.y)
 			);
 	}
-	// public bounceAgainstEdge(lowerBound: Vector, upperBound: Vector): Ball {
-	// 	const velocityBefore = this.mass * Math.pow(this.velocity.length, 2) / 2;
-	// 	const momentumBefore = this.mass * this.velocity.length;
-	// 	const temp = this.withVelocity(
-	// 		this.velocity
-	// 			.withX(this.position.x - this.radius <= lowerBound.x ? Math.abs(this.velocity.x) : upperBound.x <= this.position.x + this.radius ? -Math.abs(this.velocity.x) : this.velocity.x)
-	// 			.withY(this.position.y - this.radius <= lowerBound.y ? Math.abs(this.velocity.y) : upperBound.y <= this.position.y + this.radius ? -Math.abs(this.velocity.y) : this.velocity.y)
-	// 	);
-	// 	const velocityAfter = temp.mass * Math.pow(temp.velocity.length, 2) / 2;
-	// 	const momentumAfter = temp.mass * temp.velocity.length;
-	// 	console.log(velocityBefore, velocityAfter, velocityAfter - velocityBefore);
-	// 	if (velocityAfter - velocityBefore !== 0) {
-	// 		debugger;
-	// 	}
-	// 	console.log(momentumBefore, momentumAfter, momentumAfter - momentumBefore);
-	// 	if (momentumAfter - momentumBefore !== 0) {
-	// 		debugger;
-	// 	}
-	// 	return temp;
-	// }
 
 	/**
 	 * Returns this ball, but stepped `deltaTime` seconds though the
 	 * simulation.
 	 */
-	// public step(deltaTime: number): Ball {
-	// 	return this
-	// 		.withPosition(this.position.add(this.velocity.scale(deltaTime)))
-	// 		.withVelocity(this.velocity.add(this.acceleration.scale(deltaTime)));
-	// }
 	public step(deltaTime: number): Ball {
+		// Average velocity before and after
+		//
 		const temp = this
 			.withVelocity(this.velocity.add(this.acceleration.scale(deltaTime)));
 		return temp

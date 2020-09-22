@@ -75,7 +75,6 @@ export class View {
 
 				// Prints the position and velocity
 				this.context.fillStyle = color;
-				// this.context.font = `12px "Segoe UI", Tahoma, Geneva, Verdana, sans-serif`;
 				this.context.font = `12px "Courier New", Courier, monospace`;
 				this.context.textAlign = "center";
 				this.context.textBaseline = "ideographic";

@@ -73,16 +73,16 @@ function start(): void {
 				0.2,
 				1,
 				new Vector(-1, 0),
-				new Vector(0, 1),
+				new Vector(1, 1),
 				gravityToggle.checked ? new Vector(0, -9.8) : Vector.Zero
 			),
-			// new Ball(
-			// 	0.3,
-			// 	1,
-			// 	new Vector(1, 0),
-			// 	new Vector(0, 0),
-			// 	gravityCheckbox.checked ? new Vector(0, -9.8) : Vector.Zero
-			// )
+			new Ball(
+				0.3,
+				1,
+				new Vector(1, 0),
+				new Vector(1, 1),
+				gravityToggle.checked ? new Vector(0, -9.8) : Vector.Zero
+			)
 		)
 	);
 
