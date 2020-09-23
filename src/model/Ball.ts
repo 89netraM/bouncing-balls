@@ -36,8 +36,11 @@ export class Ball {
 		}
 	}
 
+	/**
+	 * The mass of this ball, relative to its area.
+	 */
 	public get mass(): number {
-		return 2 * Math.PI * Math.pow(this.radius, 2) * this.density;
+		return Math.PI * Math.pow(this.radius, 2) * this.density;
 	}
 
 	public constructor(
