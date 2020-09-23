@@ -74,7 +74,7 @@ export class Vector {
 	}
 
 	/**
-	 * The angle from this vector to the the x-axis in radians.
+	 * The angle from the x-axis to this vector in radians.
 	 */
 	public angle(): number;
 	/**
@@ -83,16 +83,10 @@ export class Vector {
 	public angle(other: Vector): number;
 	public angle(other?: Vector): number {
 		if (other == null) {
-			const angle = Math.atan(this.y / this.x);
-			if (this.x < 0) {
-				return angle + Math.PI * Math.sign(this.y);
-			}
-			else {
-				return angle;
-			}
+			return Vector.Right.angle(this);
 		}
 		else {
-			return this.subtract(other).angle();
+			return Math.atan2(this.x * other.y - this.y * other.x, this.dot(other));
 		}
 	}
 

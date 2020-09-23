@@ -18,7 +18,7 @@ export class Ball {
 			// mᵢvᵢ + mⱼvⱼ = mᵢuᵢ + mⱼuⱼ
 			// vⱼ - vᵢ = -(uⱼ - uᵢ)
 
-			const angleDiff = i.position.angle(j.position);
+			const angleDiff = i.position.subtract(j.position).angle();
 
 			const uᵢ = i.velocity.rotate(-angleDiff);
 			const uⱼ = j.velocity.rotate(-angleDiff);
