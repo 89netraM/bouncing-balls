@@ -6,7 +6,7 @@
 	"license": "Copyright (C) 2020 Mårten Åsberg",
 	"type": "module",
 	"devDependencies": {
-		"@89netram/snygg": "github:89netraM/snygg#v1.0.2",
+		"@89netram/snygg": "github:89netraM/snygg#v1.0.4",
 		"css-loader": "^4.3.0",
 		"html-webpack-plugin": "^4.4.1",
 		"node-sass": "^4.14.1",
