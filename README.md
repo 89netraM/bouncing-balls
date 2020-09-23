@@ -1,6 +1,6 @@
 # Bouncing Balls
 
-Physics simulator with 2D balls for DAT026 as Chalmers University of Technology.
+Physics simulator with 2D balls for DAT026 at Chalmers University of Technology.
 
 ## Development
 
