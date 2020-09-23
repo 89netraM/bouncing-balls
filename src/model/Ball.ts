@@ -18,17 +18,19 @@ export class Ball {
 			// mᵢvᵢ + mⱼvⱼ = mᵢuᵢ + mⱼuⱼ
 			// vⱼ - vᵢ = -(uⱼ - uᵢ)
 
-			const uᵢ = i.velocity;
-			const uⱼ = j.velocity;
+			const angleDiff = i.position.angle(j.position);
+
+			const uᵢ = i.velocity.rotate(-angleDiff);
+			const uⱼ = j.velocity.rotate(-angleDiff);
 
 			// vᵢ = (mᵢuᵢ + mⱼuⱼ + (uⱼ - uᵢ) * mⱼ) / (mᵢ + mⱼ)
-			const vᵢ = uᵢ.scale(i.mass).add(uⱼ.scale(j.mass)).add(uⱼ.subtract(uᵢ).scale(j.mass)).scale(1 / (i.mass + j.mass));
+			const vᵢ = new Vector((i.mass * uᵢ.x + j.mass * uⱼ.x + (uⱼ.x - uᵢ.x) * j.mass) / (i.mass + j.mass), uᵢ.y);
 			// vⱼ = vᵢ - (uⱼ - uᵢ)
-			const vⱼ = vᵢ.subtract(uⱼ.subtract(uᵢ));
+			const vⱼ = new Vector(vᵢ.x - (uⱼ.x - uᵢ.x), uⱼ.y);
 
 			return [
-				i.withVelocity(vᵢ),
-				j.withVelocity(vⱼ)
+				i.withVelocity(vᵢ.rotate(angleDiff)),
+				j.withVelocity(vⱼ.rotate(angleDiff))
 			];
 		}
 		else {

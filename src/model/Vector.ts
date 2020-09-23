@@ -83,10 +83,17 @@ export class Vector {
 	public angle(other: Vector): number;
 	public angle(other?: Vector): number {
 		if (other == null) {
-			other = Vector.Right;
+			const angle = Math.atan(this.y / this.x);
+			if (this.x < 0) {
+				return angle + Math.PI * Math.sign(this.y);
+			}
+			else {
+				return angle;
+			}
 		}
-
-		return Math.atan2(this.x * other.y - this.y * other.x, this.dot(other));
+		else {
+			return this.subtract(other).angle();
+		}
 	}
 
 	/**
