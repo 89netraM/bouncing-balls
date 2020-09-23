@@ -37,7 +37,7 @@ window.addEventListener(
 		view = new View(canvas);
 
 		debugToggle = document.getElementById("debug") as HTMLInputElement;
-		debugToggle.addEventListener("change", () => { debugInfo.classList.toggle("visible", debugToggle.checked); view.render(model, debugToggle.checked); }, true);
+		debugToggle.addEventListener("change", () => { debugInfo.classList.toggle("visible", debugToggle.checked); render(); }, true);
 		debugInfo = document.getElementById("debug-info") as HTMLParagraphElement;
 		energyDisplay = document.getElementById("energy") as HTMLSpanElement;
 		kineticDisplay = document.getElementById("kinetic") as HTMLSpanElement;
@@ -49,20 +49,19 @@ window.addEventListener(
 		playButton = document.getElementById("play") as HTMLButtonElement;
 		playButton.addEventListener("click", togglePlaying, true);
 
-		document.getElementById("restart").addEventListener("click", start, true);
+		document.getElementById("reset").addEventListener("click", reset, true);
 
 		document.addEventListener("visibilitychange", onVisibilityChanged, true);
 
-		start();
+		reset();
+
+		animationHandle = window.requestAnimationFrame(updateFrame);
+		playButton.classList.toggle("primary", false);
 	},
 	true
 );
 
-function start(): void {
-	if (animationHandle != null) {
-		window.cancelAnimationFrame(animationHandle);
-	}
-
+function reset(): void {
 	model = new Model(
 		new Vector(-view.width / 2 / pixelsPerMeter, -view.height / 2 / pixelsPerMeter),
 		new Vector(view.width / 2 / pixelsPerMeter, view.height / 2 / pixelsPerMeter),
@@ -84,9 +83,7 @@ function start(): void {
 		)
 	);
 
-	animationHandle = window.requestAnimationFrame(updateFrame);
-	
-	playButton.classList.toggle("primary", false);
+	render();
 }
 
 function isPlaying(): boolean {
@@ -125,7 +122,7 @@ function addBallClick(e: MouseEvent): void {
 			resume();
 		}
 		else {
-			view.render(model, debugToggle.checked);
+			render();
 		}
 
 		document.getElementById("add-dialog-add").removeEventListener("click", ok, true);
@@ -179,16 +176,20 @@ function updateFrame(timestamp: DOMHighResTimeStamp): void {
 		model = model.step((timestamp - previousTimestamp) / 1000);
 	}
 
+	render();
+
+	previousTimestamp = timestamp;
+
+	animationHandle = window.requestAnimationFrame(updateFrame);
+}
+
+function render(): void {
 	if (debugToggle.checked) {
 		energyDisplay.innerText = model.balls.reduce((e, b) => e + b.mass * Math.pow(b.velocity.length, 2) / 2 + b.mass * Math.abs(getAcceleration().y) * (b.position.y - model.lowerBound.y), 0).toFixed(2)
 		kineticDisplay.innerText = model.balls.reduce((e, b) => e + b.mass * Math.pow(b.velocity.length, 2) / 2, 0).toFixed(2)
 		potentialDisplay.innerText = model.balls.reduce((e, b) => e + b.mass * Math.abs(getAcceleration().y) * (b.position.y - model.lowerBound.y), 0).toFixed(2);
 	}
 	view.render(model, debugToggle.checked);
-
-	previousTimestamp = timestamp;
-
-	animationHandle = window.requestAnimationFrame(updateFrame);
 }
 
 function onVisibilityChanged(): void {
