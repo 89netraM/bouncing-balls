@@ -6,6 +6,8 @@
 	"license": "Copyright (C) 2020 Mårten Åsberg",
 	"type": "module",
 	"scripts": {
+		"build": "webpack-cli -p",
+		"start": "webpack-dev-server",
 		"test": "ts-node ./node_modules/jasmine/bin/jasmine --config=\"jasmine.json\""
 	},
 	"devDependencies": {
