@@ -119,15 +119,15 @@ function load(): Array<Ball> {
 		new Ball(
 			0.2,
 			1,
-			new Vector(-1, 0),
-			new Vector(1, 1),
+			new Vector(-view.width / 6 / pixelsPerMeter, view.height * 0.4 / pixelsPerMeter),
+			new Vector(1.2, 1.6),
 			getAcceleration()
 		),
 		new Ball(
 			0.3,
 			1,
-			new Vector(1, 0),
-			new Vector(1, 1),
+			new Vector(view.width / 6 / pixelsPerMeter, view.height * 0.2 / pixelsPerMeter),
+			new Vector(-0.6, 0.6),
 			getAcceleration()
 		)
 	);
