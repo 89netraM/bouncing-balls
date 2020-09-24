@@ -89,7 +89,8 @@ describe("Balls", () => {
 		});
 
 		it("and keep the energy levels", () => {
-			const radius = 1;
+			const minRadius = 0.1;
+			const maxRadius = 1;
 			const intersectRadius = 0.0005;
 			const maxSpeed = 1;
 			const maxGravity = 10;
@@ -97,17 +98,19 @@ describe("Balls", () => {
 			for (let i = 0; i < 10; i++) {
 				const gravity = Vector.Down.scale(Math.random() * maxGravity);
 
+				const aRadius = Math.random() * (maxRadius - minRadius) + minRadius;
 				const aBefore = new Ball(
-					radius,
+					aRadius,
 					1,
 					Vector.Zero,
 					Vector.Right.rotate(Math.random() * Math.PI + Math.PI / 2).scale(Math.random() * maxSpeed),
 					gravity
 				);
+				const bRadius = Math.random() * (maxRadius - minRadius) + minRadius;
 				const bBefore = new Ball(
-					radius,
+					bRadius,
 					1,
-					Vector.Right.rotate(Math.random() * 2 * Math.PI).scale((radius - intersectRadius) * 2),
+					Vector.Right.rotate(Math.random() * 2 * Math.PI).scale(aRadius + bRadius - intersectRadius * 2),
 					Vector.Right.rotate(Math.random() * Math.PI + Math.PI / 2).scale(Math.random() * maxSpeed),
 					gravity
 				);

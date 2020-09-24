@@ -12,13 +12,15 @@ export class Ball {
 	 * they were given.
 	 */
 	public static bounceAgainstEachOther(i: Ball, j: Ball): [i: Ball, j: Ball] {
-		if (i.position.distanceTo(j.position) <= i.radius + j.radius) {
+		const diff = i.position.subtract(j.position);
+		const distance = diff.length - (i.radius + j.radius);
+		if (distance <= 0) {
 			// u is before and v is after
 			// Equation system:
 			// mᵢvᵢ + mⱼvⱼ = mᵢuᵢ + mⱼuⱼ
 			// vⱼ - vᵢ = -(uⱼ - uᵢ)
 
-			const angleDiff = i.position.subtract(j.position).angle();
+			const angleDiff = diff.angle();
 
 			const uᵢ = i.velocity.rotate(-angleDiff);
 			const uⱼ = j.velocity.rotate(-angleDiff);
@@ -29,8 +31,12 @@ export class Ball {
 			const vⱼ = new Vector(vᵢ.x - (uⱼ.x - uᵢ.x), uⱼ.y);
 
 			return [
-				i.withVelocity(vᵢ.rotate(angleDiff)),
+				i.withVelocity(vᵢ.rotate(angleDiff))
+					// Move out of each others way relative to each others mass
+					.withPosition(i.position.subtract(diff.normalized.scale((distance * j.mass) / (i.mass + j.mass)))),
 				j.withVelocity(vⱼ.rotate(angleDiff))
+					// Move out of each others way relative to each others mass
+					.withPosition(j.position.add(diff.normalized.scale((distance * i.mass) / (i.mass + j.mass))))
 			];
 		}
 		else {
@@ -93,11 +99,24 @@ export class Ball {
 	 * @param upperBound The upper right corner of the room.
 	 */
 	public bounceAgainstEdge(lowerBound: Vector, upperBound: Vector): Ball {
-		return this
+		// Move in to the room if some part is outside.
+		const moved = this.withPosition(
+			this.position
+				.withX(x => x - this.radius <= lowerBound.x ? lowerBound.x + this.radius : upperBound.x <= x + this.radius ? upperBound.x - this.radius : x)
+				.withY(y => y - this.radius <= lowerBound.y ? lowerBound.y + this.radius : upperBound.y <= y + this.radius ? upperBound.y - this.radius : y)
+		);
+
+		return moved
 			.withVelocity(
-				this.velocity
-					.withX(this.position.x - this.radius <= lowerBound.x ? Math.abs(this.velocity.x) : upperBound.x <= this.position.x + this.radius ? -Math.abs(this.velocity.x) : this.velocity.x)
-					.withY(this.position.y - this.radius <= lowerBound.y ? Math.abs(this.velocity.y) : upperBound.y <= this.position.y + this.radius ? -Math.abs(this.velocity.y) : this.velocity.y)
+				moved.velocity
+					// Change the velocity relative to the move to preserve the energy.
+					.withX(x => moved.position.x !== this.position.x ? Math.sqrt(2 * moved.acceleration.x * (moved.position.x - this.position.x) + Math.pow(x, 2)) : x)
+					// Flip the sign if "in" the edge.
+					.withX(x => this.position.x - this.radius <= lowerBound.x ? Math.abs(x) : upperBound.x <= this.position.x + this.radius ? -Math.abs(x) : x)
+					// Change the velocity relative to the move to preserve the energy.
+					.withY(y => moved.position.y !== this.position.y ? Math.sqrt(2 * moved.acceleration.y * (moved.position.y - this.position.y) + Math.pow(y, 2)) : y)
+					// Flip the sign if "in" the edge.
+					.withY(y => this.position.y - this.radius <= lowerBound.y ? Math.abs(y) : upperBound.y <= this.position.y + this.radius ? -Math.abs(y) : y)
 			);
 	}
 
