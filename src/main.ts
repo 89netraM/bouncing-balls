@@ -2,6 +2,8 @@ import "./styles.scss";
 import { Ball, Model, Vector } from "./model";
 import { View } from "./View";
 
+const stateParameterName = "state";
+
 const pixelsPerMeter = 200;
 
 const gravity = new Vector(0, -9.8);
@@ -53,6 +55,8 @@ window.addEventListener(
 		gravityToggle = document.getElementById("gravity") as HTMLInputElement;
 		gravityToggle.addEventListener("change", () => { model = model.withBalls(model.balls.map(b => b.withAcceleration(getAcceleration()))); render(); }, true);
 
+		document.getElementById("save").addEventListener("click", save, true);
+
 		playButton = document.getElementById("play") as HTMLButtonElement;
 		playButton.addEventListener("click", togglePlaying, true);
 
@@ -69,26 +73,65 @@ window.addEventListener(
 	true
 );
 
+function save(): void {
+	const urlParams = new URLSearchParams(window.location.search.slice(1));
+	const stateString = model.balls.map(b => `${b.radius},${b.density},${b.position.x},${b.position.y},${b.velocity.x},${b.velocity.y}`).join(";");
+	urlParams.set(stateParameterName, stateString);
+	window.history.replaceState(null, null, `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`);
+}
+
+function load(): Array<Ball> {
+	const urlParams = new URLSearchParams(window.location.search.slice(1));
+	const stateString = urlParams.get(stateParameterName);
+
+	if (stateString != null && stateString.length > 0) {
+		const numbers = stateString
+			.split(";")
+			.map(s => s.split(",").map(parseFloat));
+
+		if (numbers.every(ns => ns.length === 6 && ns.every(n => !isNaN(n)))) {
+			return numbers
+				.map(ns => new Ball(
+					ns[0],
+					ns[1],
+					new Vector(ns[2], ns[3]),
+					new Vector(ns[4], ns[5])),
+					getAcceleration()
+				);
+		}
+		else {
+			urlParams.delete(stateParameterName);
+			window.history.replaceState(
+				null,
+				null,
+				new Array<string>(`${window.location.origin}${window.location.pathname}`, urlParams.toString()).filter(s=>s.length>0).join("?")
+			);
+		}
+	}
+
+	return new Array<Ball>(
+		new Ball(
+			0.2,
+			1,
+			new Vector(-1, 0),
+			new Vector(1, 1),
+			getAcceleration()
+		),
+		new Ball(
+			0.3,
+			1,
+			new Vector(1, 0),
+			new Vector(1, 1),
+			getAcceleration()
+		)
+	);
+}
+
 function reset(): void {
 	model = new Model(
 		new Vector(-view.width / 2 / pixelsPerMeter, -view.height / 2 / pixelsPerMeter),
 		new Vector(view.width / 2 / pixelsPerMeter, view.height / 2 / pixelsPerMeter),
-		new Array<Ball>(
-			new Ball(
-				0.2,
-				1,
-				new Vector(-1, 0),
-				new Vector(1, 1),
-				getAcceleration()
-			),
-			new Ball(
-				0.3,
-				1,
-				new Vector(1, 0),
-				new Vector(1, 1),
-				getAcceleration()
-			)
-		)
+		load()
 	);
 
 	render();
