@@ -77,7 +77,13 @@ function save(): void {
 	const urlParams = new URLSearchParams(window.location.search.slice(1));
 	const stateString = model.balls.map(b => `${b.radius},${b.density},${b.position.x},${b.position.y},${b.velocity.x},${b.velocity.y}`).join(";");
 	urlParams.set(stateParameterName, stateString);
-	window.history.replaceState(null, null, `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`);
+	const newURL = new Array<string>(`${window.location.origin}${window.location.pathname}`, urlParams.toString()).filter(s=>s.length>0).join("?");
+	window.history.replaceState(
+		null,
+		null,
+		newURL
+	);
+	navigator.clipboard.writeText(newURL);
 }
 
 function load(): Array<Ball> {
