@@ -20,6 +20,9 @@ let energyDisplay: HTMLSpanElement;
 let kineticDisplay: HTMLSpanElement;
 let potentialDisplay: HTMLSpanElement;
 
+const stepButtonStep = 0.05;
+let stepButton: HTMLButtonElement;
+
 let gravityToggle: HTMLInputElement;
 
 let playButton: HTMLButtonElement;
@@ -43,8 +46,12 @@ window.addEventListener(
 		kineticDisplay = document.getElementById("kinetic") as HTMLSpanElement;
 		potentialDisplay = document.getElementById("potential") as HTMLSpanElement;
 
+		stepButton = document.getElementById("step") as HTMLButtonElement;
+		stepButton.querySelector("code").innerText = `(${stepButtonStep}s)`;
+		stepButton.addEventListener("click", () => step(stepButtonStep), true);
+
 		gravityToggle = document.getElementById("gravity") as HTMLInputElement;
-		gravityToggle.addEventListener("change", () => model = model.withBalls(model.balls.map(b => b.withAcceleration(getAcceleration()))), true);
+		gravityToggle.addEventListener("change", () => { model = model.withBalls(model.balls.map(b => b.withAcceleration(getAcceleration()))); render(); }, true);
 
 		playButton = document.getElementById("play") as HTMLButtonElement;
 		playButton.addEventListener("click", togglePlaying, true);
@@ -57,6 +64,7 @@ window.addEventListener(
 
 		animationHandle = window.requestAnimationFrame(updateFrame);
 		playButton.classList.toggle("primary", false);
+		stepButton.disabled = true;
 	},
 	true
 );
@@ -104,11 +112,13 @@ function pause(): void {
 	animationHandle = null;
 	previousTimestamp = null;
 	playButton.classList.toggle("primary", true);
+	stepButton.disabled = false;
 }
 
 function resume(): void {
 	animationHandle = window.requestAnimationFrame(updateFrame);
 	playButton.classList.toggle("primary", false);
+	stepButton.disabled = true;
 }
 
 async function onClick(e: MouseEvent): Promise<void> {
@@ -209,15 +219,21 @@ function removeBall(ball: Ball): Promise<void> {
 }
 
 function updateFrame(timestamp: DOMHighResTimeStamp): void {
+	let deltaTime = 0;
 	if (previousTimestamp != null) {
-		model = model.step((timestamp - previousTimestamp) / 1000);
+		deltaTime = (timestamp - previousTimestamp) / 1000;
 	}
 
-	render();
+	step(deltaTime);
 
 	previousTimestamp = timestamp;
 
 	animationHandle = window.requestAnimationFrame(updateFrame);
+}
+
+function step(deltaTime: number): void {
+	model = model.step(deltaTime);
+	render();
 }
 
 function render(): void {

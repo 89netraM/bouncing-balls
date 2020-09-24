@@ -33,7 +33,28 @@ canvas {
 	top: 0px;
 	left: 0px;
 
-	p {
+	#debug-info {
+		display: none;
+
+		&.visible {
+			display: block;
+		}
+	}
+
+	#buttons {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+
+		#play::after {
+			content: "Pause";
+		}
+		#play.primary::after {
+			content: "Play";
+		}
+	}
+
+	> p {
 		position: relative;
 
 		&:first-child {
@@ -41,27 +62,6 @@ canvas {
 		}
 		&:last-child {
 			margin-bottom: 0px;
-		}
-
-		&#debug-info {
-			display: none;
-
-			&.visible {
-				display: block;
-			}
-		}
-
-		&#buttons {
-			display: flex;
-			flex-direction: row;
-			justify-content: space-between;
-
-			#play::after {
-				content: "Pause";
-			}
-			#play.primary::after {
-				content: "Play";
-			}
 		}
 	}
 
