@@ -5,6 +5,22 @@ import { Vector } from "./Vector";
  * An immutable physics model.
  */
 export class Model {
+	/**
+	 * Returns a list where all balls velocities might have updated because of
+	 * possible bounces against other balls.
+	 */
+	private static bounceAllBallsAgainstEachOther(balls: ReadonlyArray<Ball>): ReadonlyArray<Ball> {
+		const tempBalls = new Array<Ball>(...balls);
+
+		for (let i = 0; i < tempBalls.length; i++) {
+			for (let j = i + 1; j < tempBalls.length; j++) {
+				[tempBalls[i], tempBalls[j]] = Ball.bounceAgainstEachOther(tempBalls[i], tempBalls[j]);
+			}
+		}
+
+		return tempBalls;
+	}
+
 	public constructor(
 		/** The lower left corner of the room. */
 		public readonly lowerBound: Vector,
@@ -45,25 +61,11 @@ export class Model {
 	 */
 	public step(deltaTime: number): Model {
 		return this.withBalls(
-			this.bounceAllBallsAgainstEachOther()
-				.map(b => b.bounceAgainstEdge(this.lowerBound, this.upperBound))
-				.map(b => b.step(deltaTime))
+			Model.bounceAllBallsAgainstEachOther(
+				this.balls
+					.map(b => b.step(deltaTime))
+					.map(b => b.bounceAgainstEdge(this.lowerBound, this.upperBound))
+			)
 		);
-	}
-
-	/**
-	 * Returns a list where all balls velocities might have updated because of
-	 * possible bounces against other balls.
-	 */
-	private bounceAllBallsAgainstEachOther(): ReadonlyArray<Ball> {
-		const tempBalls = new Array<Ball>(...this.balls);
-
-		for (let i = 0; i < tempBalls.length; i++) {
-			for (let j = i + 1; j < tempBalls.length; j++) {
-				[tempBalls[i], tempBalls[j]] = Ball.bounceAgainstEachOther(tempBalls[i], tempBalls[j]);
-			}
-		}
-
-		return tempBalls;
 	}
 }
