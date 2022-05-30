@@ -27,7 +27,7 @@ module.exports = {
 		new HtmlPlugin({
 			template: path.resolve(__dirname, "index.html"),
 			title: "Bouncing Balls",
-			base: "./"
+			base: "/bouncing-balls/"
 		})
 	],
 	output: {
